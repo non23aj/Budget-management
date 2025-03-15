@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Financial Transactions</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-image: url(img/ee.jpeg);
+            background-size: cover;
+        }
+        .container {
+            max-width: 1100px;
+            margin: auto;
+            position: relative;
+        }
+        .transaction-card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            padding: 15px;
+            margin: 10px 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: transform 0.3s;
+        }
+        .transaction-card:hover {
+            transform: scale(1.05);
+        }
+        .transaction-type {
+            font-weight: bold;
+            font-size: 18px;
+        }
+        .income { color: green; }
+        .expense { color: red; }
+        .transaction-amount {
+            font-size: 20px;
+            font-weight: bold;
+        }
+        .transaction-date {
+            font-size: 14px;
+            color: gray;
+        }
+        .header {
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
+            color: white;
+            padding: 15px 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            width: 100%;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .header nav {
+            display: flex;
+            gap: 10px;
+        }
+        .nav-link {
+            color: white !important;
+            font-size: 16px;
+            padding: 8px 12px;
+            border-radius: 5px;
+            transition: 0.3s;
+        }
+        .nav-link:hover {
+            color: #003366 !important;
+            background-color: #f1f1f1 !important;
+            text-decoration: none;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
+            border: none;
+        }
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #5a0fb7, #1e5bc3);
+        }
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                text-align: center;
+                padding: 10px;
+            }
+            .header nav {
+                margin-top: 10px;
+                flex-direction: column;
+                width: 100%;
+                text-align: center;
+            }
+            .transaction-card {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Budget Management</h1>
+        <nav>
+            <a class="nav-link" href="index.html">Home</a>
+            <a class="nav-link" href="Transactions.html">Transactions</a>
+            <a class="nav-link" href="goals.html">Goals</a>
+            <a class="nav-link" href="logout.html">Logout</a>
+        </nav>
+    </div>
+    <div class="container mt-5">
+        <h1 class="text-center">Financial Transactions</h1>
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <div class="card p-3 text-center">
+                    <h4>Add Transaction</h4>
+                    <select id="transactionType" class="form-control">
+                        <option value="Income">Income</option>
+                        <option value="Expense">Expense</option>
+                    </select>
+                    <input type="text" id="transactionCategory" placeholder="Category" class="form-control mt-2">
+                    <input type="number" id="transactionAmount" placeholder="Amount" class="form-control mt-2">
+                    <input type="date" id="transactionDate" class="form-control mt-2">
+                    <button onclick="addTransaction()" class="btn btn-primary mt-3">Add Transaction</button>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-4">
+            <div class="col-md-12">
+                <h4 class="text-center">Recent Transactions</h4>
+                <div id="transactionsList"></div>
+            </div>
+        </div>
+    </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", loadTransactions);
+        function addTransaction() {
+            let type = document.getElementById('transactionType').value;
+            let category = document.getElementById('transactionCategory').value;
+            let amount = document.getElementById('transactionAmount').value;
+            let date = document.getElementById('transactionDate').value;
+            
+            if (!category || !amount || !date) return;
+            
+            let transaction = { type, category, amount, date };
+            let transactions = JSON.parse(localStorage.getItem("transactions")) || [];
+            transactions.push(transaction);
+            localStorage.setItem("transactions", JSON.stringify(transactions));
+            
+            renderTransactions();
+        }
+        function loadTransactions() {
+            renderTransactions();
+        }
+        function renderTransactions() {
+            let transactionsList = document.getElementById('transactionsList');
+            transactionsList.innerHTML = "";
+            let transactions = JSON.parse(localStorage.getItem("transactions")) || [];
+            transactions.forEach(transaction => {
+                transactionsList.innerHTML += `
+                    <div class="transaction-card">
+                        <div>
+                            <div class="transaction-type ${transaction.type.toLowerCase()}">${transaction.type}</div>
+                            <div>${transaction.category}</div>
+                            <div class="transaction-date">${transaction.date}</div>
+                        </div>
+                        <div class="transaction-amount ${transaction.type.toLowerCase()}">$${transaction.amount}</div>
+                    </div>
+                `;
+            });
+        }
+    </script>
+</body>
+</html>
+
+
+
+

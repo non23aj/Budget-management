@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Budget Manager</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-image: url(img/g.2.jpeg);
+            background-size: cover;
+            color: #333;
+        }
+        .container {
+            max-width: 1100px;
+            margin: auto;
+        }
+        .header {
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
+            color: white;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .header h1 {
+            font-size: 24px;
+        }
+        .header nav {
+            display: flex;
+            gap: 10px;
+        }
+        .nav-link {
+            color: white !important;
+            font-size: 16px;
+            padding: 8px 12px;
+            border-radius: 5px;
+            transition: 0.3s;
+        }
+        .nav-link:hover {
+            color: #003366 !important;
+            background-color: #f1f1f1 !important;
+        }
+        .card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
+            border: none;
+        }
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #5a0fb7, #1e5bc3);
+        }
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                text-align: center;
+            }
+            .header nav {
+                flex-direction: column;
+                width: 100%;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Budget Management</h1>
+        <nav>
+            <a class="nav-link" href="index.html">Home</a>
+            <a class="nav-link" href="Transactions.html">Transactions</a>
+            <a class="nav-link" href="goals.html">Goals</a>
+            <a class="nav-link" href="logout.html">Logout</a>
+        </nav>
+    </div>
+    
+    <div class="container">
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <div class="card p-3 text-center">
+                    <h4>Track Income</h4>
+                    <input type="text" id="incomeType" placeholder="Income Type" class="form-control">
+                    <input type="number" id="incomeAmount" placeholder="Income Amount" class="form-control mt-2">
+                    <button onclick="addIncome()" class="btn btn-primary mt-3">Add Income</button>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card p-3 text-center">
+                    <h4>Track Expenses</h4>
+                    <input type="text" id="expenseType" placeholder="Expense Type" class="form-control">
+                    <input type="number" id="expenseAmount" placeholder="Expense Amount" class="form-control mt-2">
+                    <button onclick="addExpense()" class="btn btn-primary mt-3">Add Expense</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row mt-4">
+            <div class="col-md-12">
+                <div class="card p-3">
+                    <h4 class="text-center">Income & Expenses Summary</h4>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Type</th>
+                                <th>Category</th>
+                                <th>Amount</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody id="transactionsTable">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener("DOMContentLoaded", loadTransactions);
+        
+        function saveTransactions(transactions) {
+            localStorage.setItem("transactions", JSON.stringify(transactions));
+        }
+        
+        function loadTransactions() {
+            let transactions = JSON.parse(localStorage.getItem("transactions")) || [];
+            transactions.forEach(t => addTransaction(t.type, t.category, t.amount, t.date, false));
+        }
+        
+        function addTransaction(type, category, amount, date = new Date().toLocaleDateString(), save = true) {
+            if (!category || !amount) {
+                Swal.fire('Error', 'Please enter valid data', 'error');
+                return;
+            }
+            let table = document.getElementById('transactionsTable');
+            let row = document.createElement('tr');
+            row.innerHTML = `<td>${type}</td><td>${category}</td><td>$${amount}</td><td>${date}</td>`;
+            table.appendChild(row);
+            
+            if (save) {
+                let transactions = JSON.parse(localStorage.getItem("transactions")) || [];
+                transactions.push({ type, category, amount, date });
+                saveTransactions(transactions);
+            }
+        }
+        
+        function addIncome() {
+            let category = document.getElementById('incomeType').value.trim();
+            let amount = document.getElementById('incomeAmount').value.trim();
+            if (!category || !amount) return;
+            addTransaction('Income', category, amount);
+            document.getElementById('incomeType').value = '';
+            document.getElementById('incomeAmount').value = '';
+        }
+        
+        function addExpense() {
+            let category = document.getElementById('expenseType').value.trim();
+            let amount = document.getElementById('expenseAmount').value.trim();
+            if (!category || !amount) return;
+            addTransaction('Expense', category, amount);
+            document.getElementById('expenseType').value = '';
+            document.getElementById('expenseAmount').value = '';
+        }
+    </script>
+</body>
+</html>
+
+
+
